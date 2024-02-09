@@ -1,54 +1,54 @@
-function solveNQueens(n) {
+function nQueensRooks(n) {
     const results = [];
+    const board = Array(n).fill(null).map(() => Array(n).fill('.'));
 
-    // Helper function to check if a queen can be placed at (row, col)
-    function isSafe(board, row, col) {
-        // Check row
-        for (let i = 0; i < col; i++) {
-            if (board[row][i] === 'Q') {
+    function isSafe(board, row, col, piece) {
+        // Check row and column
+        for (let i = 0; i < n; i++) {
+            if (board[row][i] !== '.' || board[i][col] !== '.') {
                 return false;
             }
         }
 
-        // Check upper diagonal
+        // Check diagonals (only check for potential queens)
         for (let i = row, j = col; i >= 0 && j >= 0; i--, j--) {
             if (board[i][j] === 'Q') {
                 return false;
             }
-        }
-
-        // Check lower diagonal
-        for (let i = row, j = col; i < n && j >= 0; i++, j--) {
-            if (board[i][j] === 'Q') {
-                return false;
+            for (let i = row, j = col; j >= 0 && i < n; i++, j--) {
+                if (board[i][j] === 'Q') {
+                    return false;
+                }
             }
         }
 
         return true;
     }
 
-    // Recursive backtracking function to place queens
-    function backtrack(board, col) {
+    function solveNQURUtil(board, col, pieceType) {
         if (col === n) {
-            // Base case: all queens placed, add solution
             results.push(board.map(row => row.join('')));
             return;
         }
 
-        for (let row = 0; row < n; row++) {
-            if (isSafe(board, row, col)) {
-                board[row][col] = 'Q'; // Place queen
-                backtrack(board, col + 1); // Try placing next queen
-                board[row][col] = '.'; // Backtrack
+        for (let i = 0; i < n; i++) {
+            if (isSafe(board, i, col, pieceType)) {
+                board[i][col] = pieceType;
+
+                // Alternate between 'Q' and 'R' for the next placement
+                const nextPieceType = pieceType === 'Q' ? 'R' : 'Q';
+                solveNQURUtil(board, col + 1, nextPieceType);
+
+                board[i][col] = '.';
             }
         }
     }
 
-    // Initialize empty board
-    const board = Array.from({ length: n }, () => Array(n).fill('.'));
-    backtrack(board, 0);
+    solveNQURUtil(board, 0, 'Q'); // Start with placing a queen 
     return results;
 }
-
-const solutions = solveNQueens(4);
+const solutions = nQueensRooks(4);
 console.log(solutions);
+
+
+
