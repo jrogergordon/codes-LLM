@@ -26,7 +26,7 @@ def stat(numbers):
         "mode": mode,
         "range": range_
     }
-
+ 
 
 
 ans = stat([6,1,2,1,3,3,3,4,2,])   
