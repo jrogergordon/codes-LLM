@@ -25,7 +25,7 @@ def stat(numbers):
         "median": median,
         "mode": mode,
         "range": range_
-    }
+    }   
  
 
 
