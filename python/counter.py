@@ -29,5 +29,5 @@ def stat(numbers):
 
 
 
-ans = stat([6,1,2,1,3,3,3,4,2,])  
+ans = stat([6,1,2,1,3,3,3,4,2,])   
 print(ans)  
