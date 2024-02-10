@@ -1,6 +1,6 @@
 import statistics
 
-def statistics(numbers):
+def stat(numbers):
     # Calculate sum
     sum_ = sum(numbers)
 
@@ -29,5 +29,5 @@ def statistics(numbers):
 
 
 
-ans = statistics([6,1,2,1,3,3,3,4,2,])  
+ans = stat([6,1,2,1,3,3,3,4,2,])  
 print(ans)  
