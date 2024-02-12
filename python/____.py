@@ -1,13 +1,17 @@
 def find_unique(dupeNums):
-    unique_element = None
+    unique_elements = {}
 
-    for i, num in enumerate(dupeNums):
-        if i == 0 or num != dupeNums[i-1]:
-            unique_element = num
-        elif num == unique_element:
-            break
+    for num in dupeNums:
+        if num not in unique_elements:
+            unique_elements[num] = 1
+        else:
+            unique_elements[num] += 1
 
-    return unique_element
+    for num, count in unique_elements.items():
+        if count == 1:
+            return num
 
-ans = find_unique([1,1,2,2,3,3,4,4,5])
+    return None
+
+ans = find_unique([1,1,2,2,3,3,4,5,4])
 print(ans)
