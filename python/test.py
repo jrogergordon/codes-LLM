@@ -1,7 +1,7 @@
 def rotate_matrix(matrix):
     n, m = len(matrix), len(matrix[0])
     for i in range(n):
-        for j in range(m):  
+        for j in range(m):
             if i < m and j < n:
                 temp = matrix[i][j]
                 matrix[i][j] = matrix[j][-i-1]
