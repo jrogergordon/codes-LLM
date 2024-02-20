@@ -1,34 +1,56 @@
-def num_islands(grid):
-    """
-    Returns the number of islands in the given grid and the size of each island in descending order.
-    """
-    if not grid:
-        return 0, []
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.next = None
+        self.prev = None
 
-    rows, cols = len(grid), len(grid[0])
-    visited = [[False] * cols for _ in range(rows)]
-    island_sizes = []
+class LinkedList:
+    def __init__(self):
+        self.head = None
 
-    def explore(i, j, size=0):
-        if i < 0 or i >= rows or j < 0 or j >= cols or visited[i][j] or grid[i][j] == "0":
-            return size
+    def append(self, value):
+        node = Node(value)
+        if self.head is None:
+            self.head = node
+            self.tail = node
+        else:
+            self.tail.next = node
+            node.prev = self.tail
+            self.tail = node
 
-        visited[i][j] = True
-        size += 1
-        explore(i + 1, j, size)
-        explore(i - 1, j, size)
-        explore(i, j + 1, size)
-        explore(i, j - 1, size)
-        return size
 
-    count = 0
-    for i in range(rows):
-        for j in range(cols):
-            if not visited[i][j] and grid[i][j] == "1":
-                size = explore(i, j)
-                island_sizes.append(size)
-                count += 1
+    def traverse(self):
+        current = self.head
+        while current is not None:
+            print(current.value, current.prev)
+            current = current.next
 
-    return count, island_sizes
-ans = num_islands([["1","1","0","0","0"],["1","1","0","0","0"],["0","0","1","0","0"],["0","0","0","1","1"]])
-print(ans)
+    def find_and_delete(self, value):
+        current = self.head
+        while current is not None:
+            if current.value == value:
+                # Found the node, delete it
+                if current == self.head:
+                    # If the node is the head, update the head
+                    self.head = current.next
+                else:
+                    # Otherwise, update the prev node's next pointer
+                    current.prev.next = current.next
+                # Update the tail if necessary
+                if current == self.tail:
+                    self.tail = current.prev
+                # Delete the node
+                current = None
+                return True
+            current = current.next
+        return False
+    
+# Example usage:
+ll = LinkedList()
+ll.append(1)
+ll.append(2)
+ll.append(3)
+ll.append(4)
+ll.append(5)
+ll.find_and_delete(3)
+ll.traverse()
