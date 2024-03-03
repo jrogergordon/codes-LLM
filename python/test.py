@@ -14,15 +14,12 @@ def letter_combinations(digits):
     }
 
     result = ''
-    i = 0
-    while i < len(digits):
-        count = 1
-        while i + 1 < len(digits) and digits[i] == digits[i + 1]:
-            i += 1
+    for digit in digits:
+        count = 0
+        while digit == digits[count]:
             count += 1
-        result += digit_map[digits[i]][count - 1]
-        i += 1
+        result += digit_map[digit][count-1]
 
     return [result]
-ans = letter_combinations("3344")
+ans = letter_combinations("33444")
 print(ans)
