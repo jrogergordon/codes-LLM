@@ -21,5 +21,5 @@ def letter_combinations(digits):
         result += digit_map[digit][count-1]
 
     return [result]
-ans = letter_combinations("33444")
+ans = letter_combinations("3")
 print(ans)
