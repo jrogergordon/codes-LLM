@@ -1,30 +1,28 @@
-def letter_combinations(digits):
-    if not digits:
-        return []
 
-    digit_map = {
-        '2': 'abc',
-        '3': 'def',
-        '4': 'ghi',
-        '5': 'jkl',
-        '6': 'mno',
-        '7': 'pqrs',
-        '8': 'tuv',
-        '9': 'wxyz'
-    }
+def letterCombinations(self, digits: str) -> List[str]:
+        if not digits:
+            return []
 
-    def generate_combinations(index, current_combination):
-        if index == len(digits):
-            return [current_combination]
-        else:
-            combinations = []
+        digit_map = {
+            '2': 'abc',
+            '3': 'def',
+            '4': 'ghi',
+            '5': 'jkl',
+            '6': 'mno',
+            '7': 'pqrs',
+            '8': 'tuv',
+            '9': 'wxyz'
+        }
+
+        def backtrack(index, path):
+            if index == len(digits):
+                combinations.append(path)
+                return
             for letter in digit_map[digits[index]]:
-                if index < len(digits) - 1 and digits[index] == digits[index + 1]:
-                    combinations.extend(generate_combinations(index + 2, current_combination + letter))
-                else:
-                    combinations.extend(generate_combinations(index + 1, current_combination + letter))
-            return combinations
+                backtrack(index + 1, path + letter)
 
-    return generate_combinations(0, '')
-ans = (3000)
-print(ans)
+        combinations = []
+        backtrack(0, '')
+        return combinations
+
+ans = letterCombinations([3,2,1])
