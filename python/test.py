@@ -1,19 +1,27 @@
-def can_form_palindrome(s, k):
-    if len(s) < k:
-        return True
+def letter_combinations(digits):
+    if not digits:
+        return []
 
-    l = 0
-    r = len(s) - 1
-    delete_count = 0
+    digit_map = {
+        '2': 'abc',
+        '3': 'def',
+        '4': 'ghi',
+        '5': 'jkl',
+        '6': 'mno',
+        '7': 'pqrs',
+        '8': 'tuv',
+        '9': 'wxyz'
+    }
 
-    while l < r:
-        if s[l] != s[r]:
-            delete_count += 1
-            if delete_count > k:
-                return False
-        l += 1
-        r -= 1
+    result = ''
+    i = 0
+    while i < len(digits):
+        count = 0
+        while i + count < len(digits) and digits[i + count] == digits[i]:
+            count += 1
+        result += digit_map[digits[i]][count-1]
+        i += count
 
-    return True
-ans = can_form_palindrome("leseli", 1)
+    return [result]
+ans = letter_combinations("3444")
 print(ans)
