@@ -13,13 +13,18 @@ def letter_combinations(digits):
         '9': 'wxyz'
     }
 
-    result = ''
-    for digit in digits:
-        count = 0
-        while digit == digits[count]:
-            count += 1
-        result += digit_map[digit][count-1]
+    def generate_combinations(index, current_combination):
+        if index == len(digits):
+            return [current_combination]
+        else:
+            combinations = []
+            for letter in digit_map[digits[index]]:
+                if index < len(digits) - 1 and digits[index] == digits[index + 1]:
+                    combinations.extend(generate_combinations(index + 2, current_combination + letter))
+                else:
+                    combinations.extend(generate_combinations(index + 1, current_combination + letter))
+            return combinations
 
-    return [result]
-ans = letter_combinations("3")
+    return generate_combinations(0, '')
+ans = (3000)
 print(ans)
