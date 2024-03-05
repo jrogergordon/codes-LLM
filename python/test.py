@@ -1,15 +1,9 @@
-import math
+def find_missing_number(lst):
+    n = len(lst)
+    expected_sum = n * (n + 1) // 2
+    actual_sum = sum(lst)
+    return expected_sum - actual_sum
 
-def closest_reciprocal(n):
-    if n == 0:
-        return None
-    sqrt_n = math.sqrt(n)
-    floor_val = math.floor(sqrt_n)
-    ceil_val = math.ceil(sqrt_n)
-    
-    if abs(sqrt_n - floor_val) < abs(sqrt_n - ceil_val):
-        return 1.0 / floor_val
-    else:
-        return 1.0 / ceil_val
-ans = closest_reciprocal(10)
-print(ans)
+
+numbers = [0,1, 2, 3, 5, 6, 7, 8, 9]
+print(find_missing_number(numbers))  # Output: 4
