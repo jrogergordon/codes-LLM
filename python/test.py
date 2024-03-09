@@ -16,4 +16,4 @@ def check_characters(needle, haystack):
     
     return True
 
-print(check_characters("aaaaaaaaa", "aaaaaaaa"))   
+print(check_characters("aaaaaaaaa", "aaaaaaaa"))    
