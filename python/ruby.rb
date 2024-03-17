@@ -18,5 +18,5 @@ person1 = Person.new("Alice", 30)
 puts "Name: #{person1.name}"
 puts "Age: #{person1.age}"
 
-# Call the introduce method  
+# Call the introduce method   
 person1.introduce
