@@ -1,13 +1,34 @@
-def get_rotations(l1, l2):
-    if sorted(l1) != sorted(l2):
-        return -1
-    else:
-        for i in range(len(l1)):
-            if all(l1[j] == l2[(i+j)%len(l1)] for j in range(len(l1))):
-                return i
-        return -1
+def solveKnight(m, n, K):
+    def canPlace(x, y, visited):
+        for dx, dy in [(-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1), (2, 1)]:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < m and 0 <= ny < n and not visited[nx][ny]:
+                return False
+        return True
 
-l1 = [1, 2, 3, 4, 5, 1, 1]
-l2 = [2, 3, 4,5,1,1,1]
+    def placeKnights(x, y, visited, count):
+        if count == K:
+            return True
+        for dx, dy in [(-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1), (2, 1)]:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < m and 0 <= ny < n and not visited[nx][ny] and canPlace(nx, ny, visited):
+                visited[nx][ny] = True
+                if placeKnights(nx, ny, visited, count + 1):
+                    return True
+                visited[nx][ny] = False
+        return False
 
-print(get_rotations(l1, l2))  # output: 2uts: (2, 3)
+    if K > m * n:
+        return -1
+    visited = [[False] * n for _ in range(m)]
+    visited[0][0] = True
+    if not placeKnights(0, 0, visited, 1):
+        return -1
+    return True
+
+# Test the function
+m = 5
+n = 5
+K = 2
+print(solveKnight(m, n, K))   # Output: True
+    
