@@ -1,39 +1,28 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Webpage Title</title>
-    <link rel="stylesheet" href="./styles.css"> <!-- Reference to the external CSS file -->
+    <title>Character Creator</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
+    <button id="createCharacterButton">Create Character</button>
 
-    <!-- Your webpage content goes here -->
-    <header>
-        <h1>Welcome to Your Website</h1>
-        <nav>
-            <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
+    <div id="characterDisplay">
+    </div>
 
-    <main>
-        <h2>Main Content Area</h2>
-        <p>This is where your main content goes.</p>
-    </main>
+    <div id="characterModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+                <form id="createForm"> 
+                </form>
+        </div>
+    </div>
 
-    <footer>
-        <p>&copy; 2024 Your Website. All rights reserved.</p>
-    </footer>
-
-    <!-- Your JavaScript code can be included at the end of the body tag --> 
-    <script>
-        // JavaScript code goes here
-    </script>
+    <script src="script.js"></script>
 </body>
- 
-</html>  
+
+</html>
