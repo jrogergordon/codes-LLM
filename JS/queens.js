@@ -1,22 +1,52 @@
-function groupThePeople(groupSizes) {
-    const groups = {}; // Store groups based on their size
-    let result = [];
+export default function Comment({ comment, currentUserId, recipeId }) {
+    const { data } = useQuery('currentUser', () => post('users'));
+    const [editIsOpen, setEditIsOpen] = useState(false);
+    const [deleteIsOpen, setDeleteIsOpen] = useState(false);
 
-    for (let i = 0; i < groupSizes.length; i++) {
-        const size = groupSizes[i];
-        if (!groups[size]) groups[size] = []; // Initialize group if needed
-        groups[size].push(i);
 
-        // If a group is full, add to result and reset
-        if (groups[size].length === size) {
-            result.push(groups[size]);
-            groups[size] = [];
-        }
+    const dateOptions = {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
     }
+    let comment = {};
+    let recipeId = "";
 
-    return result; // Return all the formed groups
-}
-console.log(groupThePeople([2,2,2,3,3,3,2]))
+    const name = comment.authorId?.display_name || "";
+    const authorId = comment.authorId?._id || "";
+    const commentId = comment?._id || "";
+    const text = comment?.text || "";
+    let date = comment?.createdAt
+        ? new Date(comment.createdAt).toLocaleString('en-US', dateOptions)
+        : "";
+    const editIsOpen = true;
+    const deleteIsOpen = false;
+
+    return (
+
+        { text }
+
+        
+        
+            {
+        data.user?._id === authorId &&
+            (
+
+                setEditIsOpen(true)} className = 'pink-btn' > Edit
+    setDeleteIsOpen(true)
+} className = 'pink-btn' > Delete
+                                            
+                )
+
+            }
+
+{ name }
 
 
+-
 
+
+    { date }
+
+        
+                    )
