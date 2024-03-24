@@ -43,5 +43,5 @@ root.right = Node(3)
 root.left.left = Node(4)
 root.left.right = Node(5)
 
-print(level_order(root, 1))  # Output: 3  
+print(level_order(root, 1))  # Output: 3   
 print(level_order(root, 6))  # Output: -1
