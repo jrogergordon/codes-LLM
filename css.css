@@ -1,0 +1,70 @@
+/* Global styles */
+.cc {
+    padding: 0 30px;
+}
+
+.ptn {
+    font-size: 40px;
+    font-weight: 900;
+    /* This corresponds to "Black" in font weight terminology */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.price {
+    text-align: center;
+    margin: 10px 0;
+}
+
+.price s {
+    margin-right: 10px;
+    color: #aaa;
+}
+
+.price .current {
+    color: red;
+    font-weight: bold;
+}
+
+.pr img {
+    width: 400px;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Desktop and pad styles */
+@media (min-width: 768px) {
+    .pr {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 30px;
+    }
+
+    .ptn {
+        text-align: left;
+    }
+
+    .pr .pd {
+        flex: 1;
+        margin-left: 30px;
+    }
+}
+
+/* Mobile styles */
+@media (max-width: 767px) {
+    .pr {
+        display: block;
+        margin-bottom: 30px;
+    }
+
+    .pr a {
+        display: block;
+        margin-bottom: 15px;
+    }
+
+    .pd h3,
+    .pd p {
+        margin: 10px 0;
+    }
+}
