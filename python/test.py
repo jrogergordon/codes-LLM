@@ -1,25 +1,24 @@
+import pandas as pd
 
+# Read the Excel files
+edge_df = pd.read_excel('edge.xlsx')
+active_df = pd.read_excel('active.xlsx')
 
-def n_knights(n):
-        
+# Initialize an empty DataFrame to store the results
+result_df = pd.DataFrame(columns=['iteration', 'active_node_id', 'source', 'target'])
 
-    def place_knights():
-        col = 0
-        while col < n:
-            # Fill every third column using pattern A
-            for row in range(0, n, 2):
-                chessboard[row][col] = 1
-            col += 3
+# Iterate over the active_df to find active nodes and their corresponding edges
+for col in active_df.columns[1:]:  # Skipping the first column 'node_id'
+    iteration = col.split('_')[-1]  # Extract the iteration number from the column name
+    active_nodes = active_df[active_df[col] == 'active']['node_id'].tolist()
+    
+    for node in active_nodes:
+        edges = edge_df[edge_df['source'] == node]
+        edges['iteration'] = iteration
+        edges['active_node_id'] = node
+        result_df = pd.concat([result_df, edges[['iteration', 'active_node_id', 'source', 'target']]], ignore_index=True)
 
-            if col < n:  # Fill every third column using pattern B
-                for row in range(1, n, 2):
-                    chessboard[row][col] = 1
-            col += 3
+# Export the result to a new Excel file
+result_df.to_excel('result.xlsx', index=False)
 
-    chessboard = [[0] * n for _ in range(n)]
-    place_knights()
-    return chessboard
-
-solution = n_knights(4)  # Example for an 8x8 board
-for row in solution:
-    print(row)
+print("Result exported to 'result.xlsx'")
