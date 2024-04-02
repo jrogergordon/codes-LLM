@@ -1,24 +1,21 @@
-import pandas as pd
+def count_squares(matrix):
+    m, n = len(matrix), len(matrix[0])
+    dp = [[0] * n for _ in range(m)]
+    count = 0
 
-# Read the Excel files
-edge_df = pd.read_excel('edge.xlsx')
-active_df = pd.read_excel('active.xlsx')
+    for i in range(m):
+        for j in range(n):
+            if matrix[i][j] == 1:
+                if i == 0 or j == 0:
+                    dp[i][j] = matrix[i][j]
+                else:
+                    dp[i][j] = min(dp[i-1][j-1], dp[i-1][j], dp[i][j-1]) + 1
+                count += dp[i][j]
 
-# Initialize an empty DataFrame to store the results
-result_df = pd.DataFrame(columns=['iteration', 'active_node_id', 'source', 'target'])
+    return count
 
-# Iterate over the active_df to find active nodes and their corresponding edges
-for col in active_df.columns[1:]:  # Skipping the first column 'node_id'
-    iteration = col.split('_')[-1]  # Extract the iteration number from the column name
-    active_nodes = active_df[active_df[col] == 'active']['node_id'].tolist()
-    
-    for node in active_nodes:
-        edges = edge_df[edge_df['source'] == node]
-        edges['iteration'] = iteration
-        edges['active_node_id'] = node
-        result_df = pd.concat([result_df, edges[['iteration', 'active_node_id', 'source', 'target']]], ignore_index=True)
-
-# Export the result to a new Excel file
-result_df.to_excel('result.xlsx', index=False)
-
-print("Result exported to 'result.xlsx'")
+matrix = [[1,1,1,0],
+          [1,1,1,1],
+          [1,1,1,0],]
+k=3
+print(count_squares(matrix))
