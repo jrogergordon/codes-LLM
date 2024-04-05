@@ -1,21 +1,25 @@
-def count_squares(matrix):
-    m, n = len(matrix), len(matrix[0])
-    dp = [[0] * n for _ in range(m)]
-    count = 0
+I'm trying to make an API request to this URL:
+https://api.yelp.com/v3/businesses/search?term=tacos&Location=90045
 
-    for i in range(m):
-        for j in range(n):
-            if matrix[i][j] == 1:
-                if i == 0 or j == 0:
-                    dp[i][j] = matrix[i][j]
-                else:
-                    dp[i][j] = min(dp[i-1][j-1], dp[i-1][j], dp[i][j-1]) + 1
-                count += dp[i][j]
+but getting this error:
+"Please specify a location or a latitude and longitude"
 
-    return count 
+How do I fix this error?
 
-matrix = [[1,1,1,0],
-          [1,1,1,1],
-          [1,1,1,0],]
-k=3
-print(count_squares(matrix))
+import requests
+
+url = "https://api.yelp.com/v3/businesses/search"
+headers = {
+    "Authorization": "Bearer YOUR_YELP_API_KEY"
+}
+
+params = {
+    "term": "tacos",
+    "location": "90045"
+}
+
+response = requests.get(url, headers=headers, params=params)
+
+data = response.json()
+print(data)
+                 
