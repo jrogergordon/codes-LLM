@@ -1,19 +1,10 @@
-WITH daily_amount AS (
-    SELECT 
-        visited_on, 
-        SUM(amount) AS amount,
-        ROW_NUMBER() OVER (ORDER BY visited_on) AS row_num   
-    FROM 
-        Customer
-    GROUP BY 
-        visited_on
-)
-SELECT 
-    visited_on, 
-    ROUND(AVG(amount) OVER (ORDER BY visited_on ROWS BETWEEN 6 PRECEDING AND CURRENT ROW), 2) AS average_amount
-FROM 
-    daily_amount
-WHERE 
-    row_num > 6
-ORDER BY 
-    visited_on;
+SELECT m.title AS results
+FROM Movies m
+WHERE m.movie_id = (
+    SELECT mr.movie_id
+    FROM MovieRating mr
+    WHERE mr.created_at BETWEEN '2020-02-01' AND '2020-02-29'
+    GROUP BY mr.movie_id
+    ORDER BY AVG(mr.rating) DESC, m.title ASC
+    LIMIT 1
+);
