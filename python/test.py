@@ -1,44 +1,17 @@
-from collections import defaultdict
+import folium
 
-def findOrder(numCourses, prerequisites):
-    # Create a graph and in-degree dictionary
-    graph = defaultdict(list)
-    in_degree = [0] * numCourses
-    
-    for course, prereq in prerequisites:
-        graph[prereq].append(course)
-        in_degree[course] += 1
-    
-    # DFS function to visit nodes
-    def dfs(node, visited, result):
-        if visited[node] == 1:  # Cycle detected
-            return False
-        if visited[node] == 2:  # Already visited
-            return True
-        
-        visited[node] = 1  # Mark as visiting
-        
-        for neighbor in graph[node]:
-            if not dfs(neighbor, visited, result):
-                return False
-        
-        visited[node] = 2  # Mark as visited
-        result.append(node)  # Add to the result
-        
-        return True
-    
-    # Initialize visited and result list
-    visited = [0] * numCourses
-    result = []
-    
-    # Perform DFS on each node
-    for i in range(numCourses):
-        if not dfs(i, visited, result):
-            return []
-    
-    return result[::-1]  # Reverse the result to get the correct order
+# Dictionary with city names as keys and their coordinates as values
+cities = {
+    'New York': [40.7128, -74.0060],
+    'Los Angeles': [34.0522, -118.2437],
+    'Chicago': [41.8781, -87.6298]
+}
 
-# Test the function
-numCourses = 4
-prerequisites = [[1,0],[2,0],[3,1],[3,2]]
-print(findOrder(numCourses, prerequisites))  # Output: [0, 1, 2, 3]
+# Create the map
+m = folium.Map(location=[39.8283, -98.5795], zoom_start=4)  # USA coordinates
+
+# Add markers to the map using the dictionary
+for city, coord in cities.items():
+    folium.Marker(location=coord, popup=city).add_to(m)
+
+m.save('map_dictionary.html')
