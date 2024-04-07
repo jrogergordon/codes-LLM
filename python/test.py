@@ -1,17 +1,19 @@
 import folium
 
-# Dictionary with city names as keys and their coordinates as values
-cities = {
-    'New York': [40.7128, -74.0060],
-    'Los Angeles': [34.0522, -118.2437],
-    'Chicago': [41.8781, -87.6298]
-}
+# Coordinates (latitude and longitude)
+locations = [[40.7128, -74.0060, 'New York'], 
+             [34.0522, -118.2437, 'Los Angeles'], 
+             [41.8781, -87.6298, 'Chicago']]
 
 # Create the map
-m = folium.Map(location=[39.8283, -98.5795], zoom_start=4)  # USA coordinates
+m = folium.Map(location=[39.8283, -98.5795], zoom_start=4)
 
-# Add markers to the map using the dictionary
-for city, coord in cities.items():
-    folium.Marker(location=coord, popup=city).add_to(m)
+# Add markers with custom icons and popups
+for loc in locations:
+    folium.Marker(
+        location=[loc[0], loc[1]],
+        popup=f'<strong>{loc[2]}</strong>',
+        icon=folium.Icon(icon='cloud')
+    ).add_to(m)
 
-m.save('map_dictionary.html')
+m.save('map_advanced.html')
