@@ -1,10 +1,10 @@
-SELECT m.title AS results
-FROM Movies m
-WHERE m.movie_id = (
-    SELECT mr.movie_id
-    FROM MovieRating mr
-    WHERE mr.created_at BETWEEN '2020-02-01' AND '2020-02-29'
-    GROUP BY mr.movie_id
-    ORDER BY AVG(mr.rating) DESC, m.title ASC
-    LIMIT 1
-);
+SELECT 
+    (SELECT name FROM Users WHERE user_id = (
+        SELECT user_id FROM MovieRating GROUP BY user_id ORDER BY COUNT(*) DESC LIMIT 1)
+     ) AS most_active_user,
+    
+    (SELECT title FROM Movies WHERE movie_id = (
+        SELECT movie_id FROM MovieRating 
+        WHERE EXTRACT(MONTH from created_at) = '02' AND EXTRACT(YEAR from created_at) = '2020'
+        GROUP BY movie_id ORDER BY AVG(rating) DESC LIMIT 1)
+     ) AS highest_rated_movie;

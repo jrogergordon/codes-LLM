@@ -1,7 +1,10 @@
-import time
+thisset = {"apple", "banana", "cherry", "apple", "apple", "apple", "banana"}
 
-def add_time_to_file(file_name):
-    with open(file_name, 'w') as f:
-        f.write(time.ctime() + "\n")
+fruit_counts = {}
+for fruit in thisset:
+    if fruit not in fruit_counts:
+        fruit_counts[fruit] = 1
+    else:
+        fruit_counts[fruit] += 1
 
-add_time_to_file('example.txt')
+print(sorted(fruit_counts.items(), key=lambda x: x[1], reverse=True))
