@@ -11,49 +11,54 @@ class ChessBoard:
             board[1][i] = '\u265F'  # Black pawns
             board[6][i] = '\u2659'  # White pawns
 
+        # Rooks
+        board[0][0] = board[0][7] = '\u265C'
+        board[7][0] = board[7][7] = '\u2656'
+
+        # Knights
+        board[0][1] = board[0][6] = '\u265E'
+        board[7][1] = board[7][6] = '\u2658'
+
+        # Bishops
+        board[0][2] = board[0][5] = '\u265D'
+        board[7][2] = board[7][5] = '\u2657'
+
+        # Queens
+        board[0][3] = '\u265B'
+        board[7][3] = '\u2655'
+
+        # Kings
+        board[0][4] = '\u265A'
+        board[7][4] = '\u2654'
+
         return board
 
     def get_pawn_moves(self, x, y):
-        """
-        Returns a list of available moves for a pawn at position (x, y) on the board.
-
-        Args:
-            x: The x-coordinate of the pawn.
-            y: The y-coordinate of the pawn.
-
-        Returns:
-            A list of tuples representing the available moves. Each tuple contains the x and y coordinates of the move.
-        """
         moves = []
+        piece = self.board[y][x]
 
-        # Check if the pawn is white or black
-        if self.board[y][x] == '\u2659':  # White pawn
-            # Check if the pawn can move forward one square
-            if y > 0 and self.board[y-1][x] == ' ':
-                moves.append((x, y-1))
-            # Check if the pawn can move forward two squares (only from starting position)
-            if y == 6 and self.board[5][x] == ' ' and self.board[4][x] == ' ':
-                moves.append((x, 4))
-            # Check if the pawn can capture diagonally
-            if x > 0 and y > 0 and self.board[y-1][x-1] != ' ' and self.board[y-1][x-1].islower():
-                moves.append((x-1, y-1))
-            if x < 7 and y > 0 and self.board[y-1][x+1] != ' ' and self.board[y-1][x+1].islower():
-                moves.append((x+1, y-1))
+        if piece in ['\u2659', '\u2658', '\u2657', '\u2656', '\u2655', '\u2654']:
+            opponent_pieces = ['\u265F', '\u265C', '\u265E', '\u265D', '\u265B', '\u265A']
+            forward_direction = -1
+        else:
+            opponent_pieces = ['\u2659', '\u2658', '\u2657', '\u2656', '\u2655', '\u2654']
+            forward_direction = 1
 
-        elif self.board[y][x] == '\u265F':  # Black pawn
-            # Check if the pawn can move forward one square
-            if y < 7 and self.board[y+1][x] == ' ':
-                moves.append((x, y+1))
-            # Check if the pawn can move forward two squares (only from starting position)
-            if y == 1 and self.board[2][x] == ' ' and self.board[3][x] == ' ':
-                moves.append((x, 3))
-            # Check if the pawn can capture diagonally
-            if x > 0 and y < 7 and self.board[y+1][x-1] != ' ' and self.board[y+1][x-1].isupper():
-                moves.append((x-1, y+1))
-            if x < 7 and y < 7 and self.board[y+1][x+1] != ' ' and self.board[y+1][x+1].isupper():
-                moves.append((x+1, y+1))
+        # Check if the pawn can move forward one square
+        if 0 <= y + forward_direction < 8 and self.board[y + forward_direction][x] == ' ':
+            moves.append((x, y + forward_direction))
+        # Check if the pawn can move forward two squares (only from starting position)
+        if (y == 6 and forward_direction == -1) or (y == 1 and forward_direction == 1):
+            if self.board[y + forward_direction][x] == ' ' and self.board[y + 2 * forward_direction][x] == ' ':
+                moves.append((x, y + 2 * forward_direction))
+        # Check if the pawn can capture diagonally
+        if x > 0 and 0 <= y + forward_direction < 8 and self.board[y + forward_direction][x - 1] in opponent_pieces:
+            moves.append((x - 1, y + forward_direction))
+        if x < 7 and 0 <= y + forward_direction < 8 and self.board[y + forward_direction][x + 1] in opponent_pieces:
+            moves.append((x + 1, y + forward_direction))
 
         return moves
+
     def display_board_and_collect_piece(self):
         # Display the board with digits along the x and y axis
         print('  0 1 2 3 4 5 6 7')
@@ -73,6 +78,171 @@ class ChessBoard:
             except ValueError:
                 print('Invalid input. Please enter a number.')
 
-board = ChessBoard
-board.create_board(self)
-board.display_board_and_collect_piece()
+    def collect_knight_moves(self, x, y):
+        possible_moves = []
+        knight_moves = [(2, 1), (1, 2), (-1, 2), (-2, 1), (-2, -1), (-1, -2), (1, -2), (2, -1)]
+
+        piece = self.board[y][x]
+
+        # Check if the piece is white
+        if piece in ['\u2658', '\u2657', '\u2656', '\u2655', '\u2654']:
+            opponent_pieces = ['\u265F', '\u265C', '\u265E', '\u265D', '\u265B', '\u265A']
+        else:
+            opponent_pieces = ['\u2659', '\u2658', '\u2657', '\u2656', '\u2655', '\u2654']
+
+        for dx, dy in knight_moves:
+            new_x, new_y = x + dx, y + dy
+            if 0 <= new_x < 8 and 0 <= new_y < 8:
+                if self.board[new_y][new_x] == ' ' or self.board[new_y][new_x] in opponent_pieces:
+                    possible_moves.append((new_x, new_y))
+    
+        return possible_moves
+    
+    def collect_rook_moves(self, x, y):
+        possible_moves = []
+        piece = self.board[y][x]
+
+        # Check if the piece is a rook
+        if piece not in ['\u2656', '\u265C']:
+            return possible_moves
+
+        # Check if the piece is white
+        if piece == '\u2656':
+            opponent_pieces = ['\u265F', '\u265C', '\u265E', '\u265D', '\u265B', '\u265A']
+        else:
+            opponent_pieces = ['\u2659', '\u2658', '\u2657', '\u2656', '\u2655', '\u2654']
+
+        # Check up
+        for i in range(y-1, -1, -1):
+            # print(i, x)
+            if self.board[i][x] == ' ':
+                possible_moves.append((x, i))
+            elif self.board[i][x] in opponent_pieces:
+                possible_moves.append((x, i))
+                break
+            else:
+                break
+
+        # Check down
+        for i in range(y+1, 8):
+            # print(i, x)
+            if self.board[i][x] == ' ':
+                possible_moves.append((x, i))
+            elif self.board[i][x] in opponent_pieces:
+                possible_moves.append((x, i))
+                break
+            else:
+                break
+
+        # Check left
+        for i in range(x-1, -1, -1):
+            # print(y,i)
+            if self.board[y][i] == ' ':
+                possible_moves.append((i, y))
+            elif self.board[y][i] in opponent_pieces:
+                possible_moves.append((i, y))
+                break
+            else:
+                break
+
+        # Check right
+        for i in range(x+1, 8):
+            # print(y,i)
+            if self.board[y][i] == ' ':
+                possible_moves.append((i, y))
+            elif self.board[y][i] in opponent_pieces:
+                possible_moves.append((i, y))
+                break
+            else:
+                break
+
+        return possible_moves.sort()
+
+    def collect_bishop_moves(self, x, y):
+        possible_moves = []
+        piece = self.board[y][x]
+
+        # Check if the piece is a bishop
+        if piece not in ['\u2657', '\u265D']:
+            return possible_moves
+
+        # Check if the piece is white
+        if piece == '\u2657':
+            opponent_pieces = ['\u265F', '\u265C', '\u265E', '\u265D', '\u265B', '\u265A']
+        else:
+            opponent_pieces = ['\u2659', '\u2658', '\u2657', '\u2656', '\u2655', '\u2654']
+
+        # Check up-left
+        i, j = x-1, y-1
+        while i >= 0 and j >= 0:
+            if self.board[j][i] == ' ':
+                possible_moves.append((i, j))
+            elif self.board[j][i] in opponent_pieces:
+                possible_moves.append((i, j))
+                break
+            else:
+                break
+            i -= 1
+            j -= 1
+
+        # Check up-right
+        i, j = x+1, y-1
+        while i < 8 and j >= 0:
+            if self.board[j][i] == ' ':
+                possible_moves.append((i, j))
+            elif self.board[j][i] in opponent_pieces:
+                possible_moves.append((i, j))
+                break
+            else:
+                break
+            i += 1
+            j -= 1
+
+        # Check down-left
+        i, j = x-1, y+1
+        while i >= 0 and j < 8:
+            if self.board[j][i] == ' ':
+                possible_moves.append((i, j))
+            elif self.board[j][i] in opponent_pieces:
+                possible_moves.append((i, j))
+                break
+            else:
+                break
+            i -= 1
+            j += 1
+
+        # Check down-right
+        i, j = x+1, y+1
+        while i < 8 and j < 8:
+            if self.board[j][i] == ' ':
+                possible_moves.append((i, j))
+            elif self.board[j][i] in opponent_pieces:
+                possible_moves.append((i, j))
+                break
+            else:
+                break
+            i += 1
+            j += 1
+
+        possible_moves.sort()  # Sort the possible moves
+        return possible_moves
+    
+    def clear_board(self):
+        # Clear the board of all pieces
+        for i in range(8):
+            for j in range(8):
+                self.board[i][j] = ' '
+    
+    def print_board(self):
+        print("  ", end="")
+        for i in range(8):
+            print(i, end=" ")
+        print()
+        for i in range(8):
+            print(i, end=" ")
+            for j in range(8):
+                print(self.board[i][j], end=" ")
+            print()
+
+prac = ChessBoard()
+# prac.print_board()
