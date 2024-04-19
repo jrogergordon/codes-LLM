@@ -95,7 +95,7 @@ class ChessBoard:
             if 0 <= new_x < 8 and 0 <= new_y < 8:
                 if self.board[new_y][new_x] == ' ' or self.board[new_y][new_x] in opponent_pieces:
                     possible_moves.append((new_x, new_y))
-    
+        possible_moves.sort()
         return possible_moves
     
     def collect_rook_moves(self, x, y):
@@ -155,8 +155,8 @@ class ChessBoard:
                 break
             else:
                 break
-
-        return possible_moves.sort()
+        possible_moves.sort()
+        return possible_moves
 
     def collect_bishop_moves(self, x, y):
         possible_moves = []
@@ -227,6 +227,82 @@ class ChessBoard:
         possible_moves.sort()  # Sort the possible moves
         return possible_moves
     
+    def collect_queen_moves(self, x, y):
+        moves = []
+        piece = self.board[y][x]
+
+        if piece in ['\u2659', '\u2658', '\u2657', '\u2656', '\u2655', '\u2654']:
+            opponent_pieces = ['\u265F', '\u265C', '\u265E', '\u265D', '\u265B', '\u265A']
+        else:
+            opponent_pieces = ['\u2659', '\u2658', '\u2657', '\u2656', '\u2655', '\u2654']
+
+        # Calculate moves in all 8 directions
+        for dx, dy in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
+            nx, ny = x + dx, y + dy
+            while 0 <= nx < 8 and 0 <= ny < 8:
+                if self.board[ny][nx] == ' ':  # Empty space
+                    moves.append((nx, ny))
+                elif self.board[ny][nx] in opponent_pieces:  # Enemy piece
+                    moves.append((nx, ny))
+                    break
+                else:  # Friendly piece
+                    break
+                nx += dx
+                ny += dy
+        
+        return moves
+
+    def collect_king_moves(self, x, y):
+        possible_moves = []
+        piece = self.board[y][x]
+
+        # Check if the piece is a king
+        if piece not in ['\u2654', '\u265A']:
+            return possible_moves
+
+        # Check if the piece is white
+        if piece == '\u2654':
+            opponent_pieces = ['\u265F', '\u265C', '\u265E', '\u265D', '\u265B', '\u265A']
+        else:
+            opponent_pieces = ['\u2659', '\u2658', '\u2657', '\u2656', '\u2655', '\u2654']
+
+        # Check all 8 directions
+        for dx in [-1, 0, 1]:
+            for dy in [-1, 0, 1]:
+                nx, ny = x + dx, y + dy
+                if (dx, dy) != (0, 0) and 0 <= nx < 8 and 0 <= ny < 8:
+                    if self.board[ny][nx] == ' ' or self.board[ny][nx] in opponent_pieces:
+                        possible_moves.append((nx, ny))
+
+        possible_moves.sort()
+        return possible_moves
+
+    def move_piece(self, start, end, moves):
+        piece = self.board[start[0]][start[1]]
+        if end not in moves:
+            return False
+
+        # Determine opponent pieces
+        if piece in ['\u2659', '\u2658', '\u2657', '\u2656', '\u2655', '\u2654']:
+            opponent_pieces = ['\u265F', '\u265C', '\u265E', '\u265D', '\u265B', '\u265A']
+        else:
+            opponent_pieces = ['\u2659', '\u2658', '\u2657', '\u2656', '\u2655', '\u2654']
+
+        # Check if it's a capture
+        captured_piece = self.board[end[0]][end[1]]
+        if captured_piece in opponent_pieces:
+            if captured_piece in ['\u265F', '\u265C', '\u265E', '\u265D', '\u265B', '\u265A']:
+                self.blackCaptures.append(captured_piece)
+            else:
+                self.whiteCaptures.append(captured_piece)
+
+        # Move the piece
+        self.board[end[0]][end[1]] = piece
+        self.board[start[0]][start[1]] = ' '
+
+        return True
+    
+    
     def clear_board(self):
         # Clear the board of all pieces
         for i in range(8):
@@ -244,5 +320,9 @@ class ChessBoard:
                 print(self.board[i][j], end=" ")
             print()
 
-prac = ChessBoard()
-# prac.print_board()
+
+# chess = ChessBoard()
+# chess.clear_board()
+# chess.board[4][4] = '\u265B'
+# chess.print_board()
+# print(chess.collect_queen_moves(4, 4))
