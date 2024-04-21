@@ -282,7 +282,6 @@ class ChessBoard:
 
         if captured_piece != " " and captured_piece in opponent_pieces:
             if capture.get(captured_piece) != None:
-                print("ello")
                 capture[captured_piece] += 1
             else:
                 capture[captured_piece] = 1
