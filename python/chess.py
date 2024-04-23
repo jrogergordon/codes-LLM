@@ -5,6 +5,8 @@ class ChessBoard:
         self.blackX, self.blackY = 7, 4
         self.blackCaptures = {}
         self.whiteCaptures= {}
+        self.has_castled_white = False 
+        self.has_castled_black = False
 
 
     def create_board(self):
@@ -346,6 +348,53 @@ class ChessBoard:
                 new_y += move[1]
 
         return False
+    
+    def castle(self, rook_coords, king_coords):
+        x_rook, y_rook = rook_coords
+        x_king, y_king = king_coords
+
+        # Check if the king is white or black
+        if self.board[y_king][x_king] == '\u2654':  # White king
+            color = 'black'
+            rank = 7
+        elif self.board[y_king][x_king] == '\u265A':  # Black king
+            color = 'white'
+            rank = 0
+        else:
+            raise ValueError("Invalid king piece")
+
+        # Check if castling has already happened
+        if getattr(self, f'has_castled_{color}'):
+            return False
+
+        # Check if the rook and king are on the same rank
+        if y_rook != rank or y_king != rank:
+            return False
+
+        # Check if it's a king-side or queen-side castle
+        if x_rook < x_king:  # Queen-side castle
+            # Check if there are any pieces between the rook and the king
+            for i in range(x_rook + 1, x_king):
+                if self.board[rank][i] != ' ':
+                    return False
+            # Move the king and rook
+            self.board[x_king][y_king - 2] = self.board[x_king][y_king]
+            self.board[x_king][y_king] = ' '
+            self.board[x_rook][y_rook + 2] = self.board[x_rook][y_rook]
+            self.board[x_rook][y_rook] = ' '
+        elif x_rook > x_king:  # King-side castle
+            # Check if there are any pieces between the rook and the king
+            for i in range(x_king + 1, x_rook):
+                if self.board[rank][i] != ' ':
+                    return False
+            # Move the king and rook
+            self.board[x_king][y_king + 2] = self.board[x_king][y_king]
+            self.board[x_king][y_king] = ' '
+            self.board[x_rook][y_rook - 2] = self.board[x_rook][y_rook]
+            self.board[x_rook][y_rook] = ' '
+
+    # Set has_castled to True
+        setattr(self, f'has_castled_{color}', True)
     
     
     def clear_board(self):

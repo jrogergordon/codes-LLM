@@ -704,6 +704,91 @@ class TestChessBoard(unittest.TestCase):
         self.board.move_piece((2, 2), (3, 3), moves)
         self.assertEqual(self.board.blackCaptures['\u265F'], 2)
 
+    def test_pawn_capture(self):
+        self.board.clear_board()
+        self.board.board[2][2] = '\u265F'  # Black pawn
+        self.board.board[1][1] = '\u2659'  # White pawn
+        moves = self.board.collect_pawn_moves(2, 2)
+        self.board.move_piece((2, 2), (1, 1), moves)
+        self.assertEqual(self.board.whiteCaptures['\u2659'], 1)
+
+    def test_capture_multiple_pawns(self):
+        self.board.clear_board()
+        self.board.board[3][3] = '\u265F'  # Black pawn
+        self.board.board[2][2] = '\u2659'  # White pawn
+        self.board.board[1][1] = '\u2659'  # White pawn
+        moves = self.board.collect_pawn_moves(3, 3)
+        self.board.move_piece((3, 3), (2, 2), moves)
+        moves = self.board.collect_pawn_moves(2, 2)
+        self.board.move_piece((2, 2), (1, 1), moves)
+        self.assertEqual(self.board.whiteCaptures['\u2659'], 2)
+
+    def test_knight_capture(self):
+        self.board.clear_board()
+        self.board.board[1][1] = '\u265E'  # Black knight
+        self.board.board[2][3] = '\u2659'  # White pawn
+        moves = self.board.collect_knight_moves(1, 1)
+        self.board.move_piece((1, 1), (3, 2), moves)
+        self.assertEqual(self.board.whiteCaptures['\u2659'], 1)
+
+    def test_bishop_capture(self):
+        self.board.clear_board()
+        self.board.board[1][1] = '\u265D'  # Black bishop
+        self.board.board[3][3] = '\u2659'  # White pawn
+        moves = self.board.collect_bishop_moves(1, 1)
+        self.board.move_piece((1, 1), (3, 3), moves)
+        self.assertEqual(self.board.whiteCaptures['\u2659'], 1)
+
+    def test_king_side_castle(self):
+        self.board.clear_board()
+        self.board.board[0][4] = '\u2654'  # White king
+        self.board.board[0][7] = '\u2656'  # White rook
+        self.board.castle((7, 0), (4, 0))
+        self.assertEqual(self.board.board[0][5], '\u2654')  # King moved to f1
+        self.assertEqual(self.board.board[0][6], '\u2656')  # Rook moved to g1
+
+    # def test_queen_side_castle(self):
+    #     self.board.clear_board()
+    #     self.board.board[0][4] = '\u2654'  # White king
+    #     self.board.board[0][0] = '\u2656'  # White rook
+    #     self.board.castle((0, 0), (0, 4))
+    #     self.assertEqual(self.board.board[0][3], '\u2654')  # King moved to c1
+    #     self.assertEqual(self.board.board[0][2], '\u2656')  # Rook moved to d1
+
+    # def test_castle_with_piece_in_between(self):
+    #     self.board.clear_board()
+    #     self.board.board[0][4] = '\u2654'  # White king
+    #     self.board.board[0][7] = '\u2656'  # White rook
+    #     self.board.board[0][5] = '\u2659'  # White pawn
+    #     with self.assertRaises(ValueError):  # or whatever exception is raised when castle is not possible
+    #         self.board.castle((0, 7), (0, 4))
+
+    # def test_castle_with_king_in_check(self):
+    #     self.board.clear_board()
+    #     self.board.board[0][4] = '\u2654'  # White king
+    #     self.board.board[0][7] = '\u2656'  # White rook
+    #     self.board.board[1][4] = '\u265F'  # Black pawn attacking the king
+    #     with self.assertRaises(ValueError):  # or whatever exception is raised when castle is not possible
+    #         self.board.castle((0, 7), (0, 4))
+
+    # def test_castle_with_rook_moved(self):
+    #     self.board.clear_board()
+    #     self.board.board[0][4] = '\u2654'  # White king
+    #     self.board.board[1][7] = '\u2656'  # White rook
+    #     with self.assertRaises(ValueError):  # or whatever exception is raised when castle is not possible
+    #         self.board.castle((1, 7), (0, 4))
+
+    # def test_castle_with_king_moved(self):
+    #     self.board.clear_board()
+    #     self.board.board[1][4] = '\u2654'  # White king
+    #     self.board.board[0][7] = '\u2656'  # White rook
+    #     with self.assertRaises(ValueError):  # or whatever exception is raised when castle is not possible
+    #         self.board.castle((0, 7), (1, 4))
+
+
+
+
+
 
 
 
