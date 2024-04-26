@@ -7,6 +7,7 @@ class ChessBoard:
         self.whiteCaptures= {}
         self.has_castled_white = False 
         self.has_castled_black = False
+        self.player_turn = "White"
 
 
     def create_board(self):
@@ -44,18 +45,18 @@ class ChessBoard:
         moves = []
         piece = self.board[y][x]
 
-        if piece in ['\u2659', '\u2658', '\u2657', '\u2656', '\u2655', '\u2654']:
-            opponent_pieces = ['\u265F', '\u265C', '\u265E', '\u265D', '\u265B', '\u265A']
-            forward_direction = 1 # white
-        else:
+        if piece in ['\u265F', '\u265C', '\u265E', '\u265D', '\u265B', '\u265A']:
             opponent_pieces = ['\u2659', '\u2658', '\u2657', '\u2656', '\u2655', '\u2654']
-            forward_direction = -1 #black
+            forward_direction = 1 # black
+        else:
+            opponent_pieces = ['\u265F', '\u265C', '\u265E', '\u265D', '\u265B', '\u265A']
+            forward_direction = -1 #white
 
         # Check if the pawn can move forward one square
         if 0 <= y + forward_direction < 8 and self.board[y + forward_direction][x] == ' ':
             moves.append((x, y + forward_direction))
         # Check if the pawn can move forward two squares (only from starting position)
-        if (y == 6 and forward_direction == -1) or (y == 1 and forward_direction == 1):
+        if (y == 1 and forward_direction == 1) or (y == 6 and forward_direction == -1):
             if self.board[y + forward_direction][x] == ' ' and self.board[y + 2 * forward_direction][x] == ' ':
                 moves.append((x, y + 2 * forward_direction))
         # Check if the pawn can capture diagonally
@@ -266,7 +267,13 @@ class ChessBoard:
         possible_moves.sort()
         return possible_moves
 
+
+
+        # if not self.is_player_piece(self.board[start[1]][start[0]]):
+        #     raise ValueError("You can only move your own pieces")
+        
     def move_piece(self, start, end, moves):
+        
         piece = self.board[start[1]][start[0]]
         if end not in moves:
             return False
@@ -352,6 +359,7 @@ class ChessBoard:
     def castle(self, rook_coords, king_coords):
         x_rook, y_rook = rook_coords
         x_king, y_king = king_coords
+        rookPre = [0,7] 
 
         # Check if the king is white or black
         if self.board[y_king][x_king] == '\u2654':  # White king
@@ -368,7 +376,7 @@ class ChessBoard:
             return False
 
         # Check if the rook and king are on the same rank
-        if y_rook != rank or y_king != rank:
+        if y_rook != rank or y_king != rank or x_rook not in rookPre or x_king != 4:
             return False
 
         # Check if it's a king-side or queen-side castle
@@ -378,23 +386,54 @@ class ChessBoard:
                 if self.board[rank][i] != ' ':
                     return False
             # Move the king and rook
-            self.board[x_king][y_king - 2] = self.board[x_king][y_king]
-            self.board[x_king][y_king] = ' '
-            self.board[x_rook][y_rook + 2] = self.board[x_rook][y_rook]
-            self.board[x_rook][y_rook] = ' '
+            self.board[y_king][x_king - 3] = self.board[y_king][x_king]
+            self.board[y_king][x_king] = ' '
+            self.board[y_rook][x_rook + 2] = self.board[y_rook][x_rook]
+            self.board[y_rook][x_rook] = ' '
         elif x_rook > x_king:  # King-side castle
             # Check if there are any pieces between the rook and the king
             for i in range(x_king + 1, x_rook):
                 if self.board[rank][i] != ' ':
                     return False
             # Move the king and rook
-            self.board[x_king][y_king + 2] = self.board[x_king][y_king]
-            self.board[x_king][y_king] = ' '
-            self.board[x_rook][y_rook - 2] = self.board[x_rook][y_rook]
-            self.board[x_rook][y_rook] = ' '
-
+            self.board[y_king][x_king + 2] = self.board[y_king][x_king]
+            self.board[y_king][x_king] = ' '
+            self.board[y_rook][x_rook - 2] = self.board[y_rook][x_rook]
+            self.board[y_rook][x_rook] = ' '
     # Set has_castled to True
         setattr(self, f'has_castled_{color}', True)
+
+
+    def is_player_piece(self, piece):
+        if self.player_turn == 'Black':
+            return piece in ['\u2654', '\u2655', '\u2656', '\u2657', '\u2658', '\u2659']
+        elif self.player_turn == 'White':
+            return piece in ['\u265A', '\u265B', '\u265C', '\u265D', '\u265E', '\u265F']
+        else:
+            raise ValueError("Invalid player turn")
+        
+    def is_check(self, x, y):
+        piece = self.board[y][x]
+        if piece in ['\u2654', '\u2655', '\u2656', '\u2657', '\u2658', '\u2659']:
+            king_x, king_y = self.whiteX, self.whiteY
+        elif piece in ['\u265A', '\u265B', '\u265C', '\u265D', '\u265E', '\u265F']:
+            king_x, king_y = self.blackX, self.blackY
+
+        if piece == '\u2654' or piece == '\u265A':  # King
+            moves = self.collect_king_moves(x, y)
+        elif piece == '\u2655' or piece == '\u265B':  # Queen
+            moves = self.collect_queen_moves(x, y)
+        elif piece == '\u2656' or piece == '\u265C':  # Rook
+            moves = self.collect_rook_moves(x, y)
+        elif piece == '\u2657' or piece == '\u265D':  # Bishop
+            moves = self.collect_bishop_moves(x, y)
+        elif piece == '\u2658' or piece == '\u265E':  # Knight
+            moves = self.collect_knight_moves(x, y)
+        elif piece == '\u2659' or piece == '\u265F':  # Pawn
+            moves = self.collect_pawn_moves(x, y)
+        print(moves)
+        return (king_x, king_y) in moves
+
     
     
     def clear_board(self):
@@ -417,8 +456,9 @@ class ChessBoard:
 
 # chess = ChessBoard()
 # chess.clear_board()
-# chess.board[1][1] = '\u2656'
-# chess.board[3][1] = '\u265F'
+
+# chess.print_board()
+# chess.castle((7, 7), (4, 7))
 # chess.print_board()
 # moves = chess.collect_rook_moves(1, 1)
 # chess.move_piece((1, 1), (1, 3), moves)

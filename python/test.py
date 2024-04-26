@@ -7,55 +7,58 @@ class TestChessBoard(unittest.TestCase):
         self.board = ChessBoard()
 
     def test_white_pawn_no_pieces_in_front(self):
+        self.board.clear_board()
         self.board.board[6][4] = '\u265F'  # Switched to white pawn
         moves = self.board.collect_pawn_moves(4, 6)
         moves.sort()
-        expected_moves = [(4, 4), (4, 5)]
+        expected_moves = [(4, 7)]
         expected_moves.sort()
         self.assertEqual(moves, expected_moves)
 
     def test_white_pawn_piece_in_front(self):
+        self.board.clear_board()        
         self.board.board[6][4] = '\u265F'  # Switched to white pawn
-        self.board.board[5][4] = '\u2656'  # Switched to white rook
+        self.board.board[7][4] = '\u2656'  # Switched to white rook
         moves = self.board.collect_pawn_moves(4, 6)
         moves.sort()
         self.assertEqual(moves, [])
 
     def test_white_pawn_diagonal_capture(self):
+        self.board.clear_board()        
         self.board.board[6][4] = '\u265F'  # Switched to white pawn
-        self.board.board[5][3] = '\u2659'  # Switched to black pawn
+        self.board.board[7][3] = '\u2659'  # Switched to black pawn
         moves = self.board.collect_pawn_moves(4, 6)
         moves.sort()
-        expected_moves = [(3, 5), (4, 5), (4, 4)]  # Added move forward one square
+        expected_moves = [(3, 7), (4, 7)]  # Added move forward one square
         expected_moves.sort()
         self.assertEqual(moves, expected_moves)
 
     def test_black_pawn_no_pieces_in_front(self):
-        self.board.board[1][4] = '\u2659'
+        self.board.clear_board()        
+        self.board.board[1][4] = '\u265F' 
         moves = self.board.collect_pawn_moves(4, 1)
         moves.sort()
-        expected_moves = [(4, 2), (4, 3)]
+        expected_moves = [(4, 2), (4, 3)] # Black pawn can move two squares from starting position
         expected_moves.sort()
         self.assertEqual(moves, expected_moves)
 
     def test_black_pawn_piece_in_front(self):
-        self.board.board[1][4] = '\u2659'
-        self.board.board[2][4] = '\u265f'
+        self.board.clear_board()        
+        self.board.board[1][4] = '\u265F'
+        self.board.board[2][4] = '\u2659'
         moves = self.board.collect_pawn_moves(4, 1)
         moves.sort()
-        self.assertEqual(moves, [])
+        self.assertEqual(moves, []) # Black pawn is blocked by another piece
 
     def test_black_pawn_diagonal_capture(self):
         self.board.clear_board()
-        self.board.board[1][4] = '\u2659'
-        self.board.board[2][5] = '\u265f'
+        self.board.board[1][4] = '\u265F'
+        self.board.board[2][5] = '\u2659'
         moves = self.board.collect_pawn_moves(4, 1)
         moves.sort()
-        expected_moves = [(4, 2), (4, 3), (5, 2)]
+        expected_moves = [(4, 2), (4, 3), (5, 2)] # Black pawn can capture diagonally
         expected_moves.sort()
         self.assertEqual(moves, expected_moves)
-
-
 
     def test_collect_knight_moves_white_knight(self):
         self.board.clear_board()
@@ -300,23 +303,23 @@ class TestChessBoard(unittest.TestCase):
         self.board.clear_board()
         self.board.board[1][1] = '\u2659'  # White pawn
         moves = self.board.collect_pawn_moves(1, 1)
-        self.assertTrue(self.board.move_piece((1, 1), (1, 3), moves))
+        self.assertTrue(self.board.move_piece((1, 1), (1, 0), moves))
 
     def test_move_pawn_to_new_spot(self):
         self.board.clear_board()
         self.board.board[1][1] = '\u2659'  # White pawn
         moves = self.board.collect_pawn_moves(1, 1)
-        self.board.move_piece((1, 1), (1, 3), moves)
-        self.assertEqual(self.board.board[3][1], '\u2659')
+        self.board.move_piece((1, 1), (1, 0), moves)
+        self.assertEqual(self.board.board[0][1], '\u2659')
         self.assertEqual(self.board.board[1][1], ' ')
 
-    def test_pawn_capture(self):
+    def test_pawn_capture3(self):
         self.board.clear_board()
-        self.board.board[1][1] = '\u2659' # White pawn
-        self.board.board[2][2] = '\u265f'  # Black pawn
+        self.board.board[1][1] = '\u265F' # Black pawn
+        self.board.board[2][2] = '\u2659'  # White pawn
         moves = self.board.collect_pawn_moves(1, 1)
         self.board.move_piece((1, 1), (2, 2), moves)
-        self.assertEqual(self.board.board[2][2], '\u2659')
+        self.assertEqual(self.board.board[2][2], '\u265F')
         self.assertEqual(self.board.board[1][1], ' ')
 
     def test_knight_move_returns_true(self):
@@ -669,13 +672,6 @@ class TestChessBoard(unittest.TestCase):
         self.board.move_piece((1, 1), (3, 3), moves)
         self.assertEqual(self.board.blackCaptures['\u265F'], 1)
 
-    def test_pawn_capture(self):
-        self.board.clear_board()
-        self.board.board[1][1] = '\u2659'  # White pawn
-        self.board.board[2][2] = '\u265F'  # Black pawn
-        moves = self.board.collect_pawn_moves(1, 1)
-        self.board.move_piece((1, 1), (2, 2), moves)
-        self.assertEqual(self.board.blackCaptures['\u265F'], 1)
 
     def test_knight_capture(self):
         self.board.clear_board()
@@ -695,33 +691,22 @@ class TestChessBoard(unittest.TestCase):
 
     def test_capture_multiple_pawns(self):
         self.board.clear_board()
-        self.board.board[1][1] = '\u2659'  # White pawn
-        self.board.board[2][2] = '\u265F'  # Black pawn
-        self.board.board[3][3] = '\u265F'  # Black pawn
+        self.board.board[1][1] = '\u265F'  # Black pawn
+        self.board.board[2][2] = '\u2659'  # White pawn
+        self.board.board[3][3] = '\u2659'  # White pawn
         moves = self.board.collect_pawn_moves(1, 1)
         self.board.move_piece((1, 1), (2, 2), moves)
         moves = self.board.collect_pawn_moves(2, 2)
         self.board.move_piece((2, 2), (3, 3), moves)
-        self.assertEqual(self.board.blackCaptures['\u265F'], 2)
+        self.assertEqual(self.board.whiteCaptures['\u2659'], 2)
 
     def test_pawn_capture(self):
         self.board.clear_board()
-        self.board.board[2][2] = '\u265F'  # Black pawn
-        self.board.board[1][1] = '\u2659'  # White pawn
-        moves = self.board.collect_pawn_moves(2, 2)
-        self.board.move_piece((2, 2), (1, 1), moves)
-        self.assertEqual(self.board.whiteCaptures['\u2659'], 1)
-
-    def test_capture_multiple_pawns(self):
-        self.board.clear_board()
-        self.board.board[3][3] = '\u265F'  # Black pawn
         self.board.board[2][2] = '\u2659'  # White pawn
-        self.board.board[1][1] = '\u2659'  # White pawn
-        moves = self.board.collect_pawn_moves(3, 3)
-        self.board.move_piece((3, 3), (2, 2), moves)
+        self.board.board[1][1] = '\u265F'  # Black pawn
         moves = self.board.collect_pawn_moves(2, 2)
         self.board.move_piece((2, 2), (1, 1), moves)
-        self.assertEqual(self.board.whiteCaptures['\u2659'], 2)
+        self.assertEqual(self.board.blackCaptures['\u265F'], 1)
 
     def test_knight_capture(self):
         self.board.clear_board()
@@ -741,49 +726,100 @@ class TestChessBoard(unittest.TestCase):
 
     def test_king_side_castle(self):
         self.board.clear_board()
-        self.board.board[0][4] = '\u2654'  # White king
-        self.board.board[0][7] = '\u2656'  # White rook
+        self.board.board[7][4] = '\u2654'  # White king
+        self.board.board[7][7] = '\u2656'  # White rook
+        self.board.castle((7, 7), (4, 7))
+        self.assertEqual(self.board.board[7][6], '\u2654')  # King moved to f1
+        self.assertEqual(self.board.board[7][5], '\u2656')  # Rook moved to g1
+
+    def test_queen_side_castle(self):
+        self.board.clear_board()
+        self.board.board[7][4] = '\u2654'  # White king
+        self.board.board[7][0] = '\u2656'  # White rook
+        self.board.castle((0, 7), (4, 7))
+        self.assertEqual(self.board.board[7][1], '\u2654')  # King moved to c1
+        self.assertEqual(self.board.board[7][2], '\u2656')  # Rook moved to d1
+
+    def test_black_king_side_castle(self):
+        self.board.clear_board()
+        self.board.board[0][4] = '\u265A'  # Black king
+        self.board.board[0][7] = '\u265C'  # Black rook
         self.board.castle((7, 0), (4, 0))
-        self.assertEqual(self.board.board[0][5], '\u2654')  # King moved to f1
-        self.assertEqual(self.board.board[0][6], '\u2656')  # Rook moved to g1
+        self.assertEqual(self.board.board[0][6], '\u265A')  # King moved to f8
+        self.assertEqual(self.board.board[0][5], '\u265C')  # Rook moved to g8
 
-    # def test_queen_side_castle(self):
-    #     self.board.clear_board()
-    #     self.board.board[0][4] = '\u2654'  # White king
-    #     self.board.board[0][0] = '\u2656'  # White rook
-    #     self.board.castle((0, 0), (0, 4))
-    #     self.assertEqual(self.board.board[0][3], '\u2654')  # King moved to c1
-    #     self.assertEqual(self.board.board[0][2], '\u2656')  # Rook moved to d1
+    def test_black_queen_side_castle(self):
+        self.board.clear_board()
+        self.board.board[0][4] = '\u265A'  # Black king
+        self.board.board[0][0] = '\u265C'  # Black rook
+        self.board.castle((0, 0), (4, 0))
+        self.assertEqual(self.board.board[0][1], '\u265A')  # King moved to c8
+        self.assertEqual(self.board.board[0][2], '\u265C')  # Rook moved to d8
 
-    # def test_castle_with_piece_in_between(self):
-    #     self.board.clear_board()
-    #     self.board.board[0][4] = '\u2654'  # White king
-    #     self.board.board[0][7] = '\u2656'  # White rook
-    #     self.board.board[0][5] = '\u2659'  # White pawn
-    #     with self.assertRaises(ValueError):  # or whatever exception is raised when castle is not possible
-    #         self.board.castle((0, 7), (0, 4))
+    def test_castling_already_happened(self):
+        self.board.clear_board()
+        self.board.has_castled_white = True
+        self.board.board[7][4] = '\u2654'  # White king
+        self.board.board[7][7] = '\u2656'  # White rook
+        result = self.board.castle((7, 7), (4, 7))
+        self.assertFalse(result)
 
-    # def test_castle_with_king_in_check(self):
-    #     self.board.clear_board()
-    #     self.board.board[0][4] = '\u2654'  # White king
-    #     self.board.board[0][7] = '\u2656'  # White rook
-    #     self.board.board[1][4] = '\u265F'  # Black pawn attacking the king
-    #     with self.assertRaises(ValueError):  # or whatever exception is raised when castle is not possible
-    #         self.board.castle((0, 7), (0, 4))
+    def test_incorrect_castling_coordinates(self):
+        self.board.clear_board()
+        self.board.board[7][3] = '\u2654'  # White king not in starting position
+        self.board.board[7][7] = '\u2656'  # White rook
+        result = self.board.castle((7, 7), (3, 7))
+        self.assertFalse(result)
 
-    # def test_castle_with_rook_moved(self):
-    #     self.board.clear_board()
-    #     self.board.board[0][4] = '\u2654'  # White king
-    #     self.board.board[1][7] = '\u2656'  # White rook
-    #     with self.assertRaises(ValueError):  # or whatever exception is raised when castle is not possible
-    #         self.board.castle((1, 7), (0, 4))
+    def test_king_not_in_check(self):
+        self.board.clear_board()
+        self.board.board[7][4] = '\u2654'  # White king
+        self.board.board[6][4] = '\u2659'  # White pawn
+        self.board.blackX, self.board.blackY = 4, 7
+        self.assertFalse(self.board.is_check(4, 6))
 
-    # def test_castle_with_king_moved(self):
+    def test_black_king_in_check_by_white_pawn(self):
+        self.board.clear_board()
+        self.board.board[7][4] = '\u2654'  # black king
+        self.board.board[6][3] = '\u265F'  # white pawn
+        self.board.blackX, self.board.blackY = 4, 7
+        self.assertTrue(self.board.is_check(3, 6))
+
+    # def test_white_king_in_check_by_black_knight(self):
     #     self.board.clear_board()
+    #     self.board.board[7][4] = '\u2654'  # White king
+    #     self.board.board[5][3] = '\u265E'  # Black knight
+    #     self.board.whiteX, self.board.whiteY = 4, 7
+    #     self.assertTrue(self.board.is_check(3, 5))
+
+    # def test_white_king_in_check_by_black_bishop(self):
+    #     self.board.clear_board()
+    #     self.board.board[7][4] = '\u2654'  # White king
+    #     self.board.board[5][2] = '\u265D'  # Black bishop
+    #     self.board.whiteX, self.board.whiteY = 4, 7
+    #     self.assertTrue(self.board.is_check(2, 5))
+
+    # def test_black_king_in_check_by_white_rook(self):
+    #     self.board.clear_board()
+    #     self.board.board[0][4] = '\u265A'  # Black king
+    #     self.board.board[1][4] = '\u2656'  # White rook
+    #     self.board.blackX, self.board.blackY = 4, 0
+    #     self.assertTrue(self.board.is_check(4, 1))
+
+    # def test_black_king_in_check_by_white_queen(self):
+    #     self.board.clear_board()
+    #     self.board.board[0][4] = '\u265A'  # Black king
+    #     self.board.board[1][4] = '\u2655'  # White queen
+    #     self.board.blackX, self.board.blackY = 4, 0
+    #     self.assertTrue(self.board.is_check(4, 1))
+
+    # def test_black_king_in_check_by_white_king(self):
+    #     self.board.clear_board()
+    #     self.board.board[0][4] = '\u265A'  # Black king
     #     self.board.board[1][4] = '\u2654'  # White king
-    #     self.board.board[0][7] = '\u2656'  # White rook
-    #     with self.assertRaises(ValueError):  # or whatever exception is raised when castle is not possible
-    #         self.board.castle((0, 7), (1, 4))
+    #     self.board.blackX, self.board.blackY = 4, 0
+    #     self.assertTrue(self.board.is_check(4, 1))
+
 
 
 
