@@ -509,7 +509,7 @@ class ChessBoard:
 
     
     
-    def clear_board(self):
+    def clear_board(self): 
         # Clear the board of all pieces
         for i in range(8):
             for j in range(8):
