@@ -1,8 +1,8 @@
 class ChessBoard:
     def __init__(self):
         self.board = self.create_board()
-        self.whiteX, self.whiteY = 0, 4
-        self.blackX, self.blackY = 7, 4
+        self.whiteX, self.whiteY = 4, 0
+        self.blackX, self.blackY = 4, 7
         self.blackCaptures = {}
         self.whiteCaptures= {}
         self.has_castled_white = False 
@@ -302,13 +302,13 @@ class ChessBoard:
         return True
 
     def is_king_in_check(self, king):
-        if king == '\u2654':  # Black King
+        if self.board[king[1]][king[0]] == '\u2654':  # Black King
             x, y = self.blackX, self.blackY
             diagonal_enemy_pieces = ['\u265D', '\u265B']  # White Bishop and Queen
             straight_enemy_pieces = ['\u265C', '\u265B']  # White Rook and Queen
             pawn_enemy_piece = '\u265F'  # White Pawn
             horse_enemy_piece = '\u265E'  # White Knight
-        elif king == '\u265A':  # White King
+        elif self.board[king[1]][king[0]] == '\u265A':  # White King
             x, y = self.whiteX, self.whiteY
             diagonal_enemy_pieces = ['\u2657', '\u2655']  # Black Bishop and Queen
             straight_enemy_pieces = ['\u2656', '\u2655']  # Black Rook and Queen
@@ -434,6 +434,79 @@ class ChessBoard:
         print(moves)
         return (king_x, king_y) in moves
 
+
+    def run_game(self):
+        while True:
+            self.print_board()
+            start = input(f"Player {self.player_turn}, enter the coordinates of the piece you'd like to move (x, y): ")
+            try:
+                x, y = map(int, start.split(','))
+            except ValueError:
+                print("Invalid input. Please try again.")
+                continue
+            piece = self.board[y][x]
+            if not self.is_player_piece(piece):
+                print("Invalid piece. Please try again.")
+                continue
+            moves = []
+            if piece == '\u265F' or piece == '\u2659':  # Pawn
+                moves = self.collect_pawn_moves(x, y)
+            elif piece == '\u265E' or piece == '\u2658':  # Knight
+                moves = self.collect_knight_moves(x, y)
+            elif piece == '\u265D' or piece == '\u2657':  # Rook
+                moves = self.collect_rook_moves(x, y)
+            elif piece == '\u265C' or piece == '\u2656':  # Bishop
+                moves = self.collect_bishop_moves(x, y)
+            elif piece == '\u265B' or piece == '\u2655':  # Queen
+                moves = self.collect_queen_moves(x, y)
+            elif piece == '\u265A' or piece == '\u2654':  # King
+                moves = self.collect_king_moves(x, y)
+                if getattr(self, f'has_castled_{self.player_turn}') is False:
+                    moves.append('castle')
+            if not moves:
+                print("No valid moves for this piece. Please try again.")
+                continue
+            print("Valid moves: ", moves)
+            end = input("Enter the coordinates where you'd like to move the piece (x, y) or 'castle': ")
+            if end.lower() == 'castle':
+                rook_coords = input("Enter the coordinates of the rook you'd like to castle with (x, y): ")
+                try:
+                    rook_x, rook_y = map(int, rook_coords.split(','))
+                except ValueError:
+                    print("Invalid input. Please try again.")
+                    continue
+                if not self.castle((rook_x, rook_y), (x, y)):
+                    print("You cannot castle with that rook. Please try again.")
+                    continue
+            else:
+                try:
+                    end_x, end_y = map(int, end.split(','))
+                except ValueError:
+                    print("Invalid input. Please try again.")
+                    continue
+                if (end_x, end_y) not in moves:
+                    print("Invalid move. Please try again.")
+                    continue
+                old_board = [row[:] for row in self.board]  # Save the current state of the board
+                self.move_piece((x, y), (end_x, end_y), moves)
+                if self.player_turn == 'White':
+                    king_coords = (self.whiteX, self.whiteY)
+                else:
+                    king_coords = (self.blackX, self.blackY)
+                if self.is_king_in_check(king_coords):
+                    print("You cannot move into check. Please try again.")
+                    self.board = old_board  # Reset the board to its previous state
+                    continue
+                if piece == '\u265A' or piece == '\u2654':  # King
+                    setattr(self, f'has_castled_{self.player_turn}', True)
+            if self.player_turn == 'White':
+                enemy_king_coords = (self.blackX, self.blackY)
+            else:
+                enemy_king_coords = (self.whiteX, self.whiteY)
+            if self.is_king_in_check(enemy_king_coords):
+                print("Check!")
+            self.player_turn = 'Black' if self.player_turn == 'White' else 'White'
+
     
     
     def clear_board(self):
@@ -454,12 +527,5 @@ class ChessBoard:
             print()
 
 
-# chess = ChessBoard()
-# chess.clear_board()
-
-# chess.print_board()
-# chess.castle((7, 7), (4, 7))
-# chess.print_board()
-# moves = chess.collect_rook_moves(1, 1)
-# chess.move_piece((1, 1), (1, 3), moves)
-# chess.print_board()
+chess = ChessBoard()
+chess.run_game()
